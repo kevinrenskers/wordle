@@ -73,7 +73,7 @@ struct AppView: View {
 
   var body: some View {
     WithViewStore(self.store) { viewStore in
-      VStack {
+      VStack(spacing: 10) {
         // Previous guesses
 
         ForEach(viewStore.previousGuesses, id: \.self) { word in
@@ -93,18 +93,19 @@ struct AppView: View {
               Letter(letter: character)
             }
             ForEach(Array(Array(repeating: " ", count: 5 - viewStore.input.count).enumerated()), id: \.offset) { index, character in
-              Letter(letter: Character(character))
-                .background(index == 0 ? .white : .clear)
+              Letter(letter: Character(index == 0 ? "_" : character))
             }
           }
         }
 
         // Fill with empty rows until we have 6 rows in total
 
-        ForEach((0 ..< 5 - viewStore.previousGuesses.count).map { $0 }, id: \.self) { _ in
-          HStack(spacing: 10) {
-            ForEach(Array(Array(repeating: " ", count: 5).enumerated()), id: \.offset) { _, character in
-              Letter(letter: Character(character))
+        if viewStore.previousGuesses.count < 6 {
+          ForEach((0 ..< (viewStore.gameState == .running ? 5 : 6) - viewStore.previousGuesses.count).map { $0 }, id: \.self) { _ in
+            HStack(spacing: 10) {
+              ForEach(Array(Array(repeating: " ", count: 5).enumerated()), id: \.offset) { _, character in
+                Letter(letter: Character(character))
+              }
             }
           }
         }
@@ -167,6 +168,7 @@ struct AppView: View {
           }
         }
       }
+      .padding(.vertical, 40)
     }
   }
 }
