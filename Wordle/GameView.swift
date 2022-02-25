@@ -65,6 +65,7 @@ struct Letter: View {
     Text(String(letter))
       .frame(width: 70, height: 70, alignment: .center)
       .border(.white, width: 2)
+      .foregroundColor(.white)
   }
 }
 
