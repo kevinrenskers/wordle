@@ -15,3 +15,21 @@ extension String {
     return misspelledRange.location == NSNotFound
   }
 }
+
+extension String: Identifiable {
+  public var id: String {
+    self
+  }
+}
+
+extension Character: Identifiable {
+  public var id: Character {
+    self
+  }
+}
+
+extension Array: Identifiable where Element == Character {
+  public var id: String {
+    self.map(String.init).joined()
+  }
+}
