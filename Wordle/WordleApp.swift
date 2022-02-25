@@ -7,7 +7,7 @@ struct WordleApp: App {
         WindowGroup {
           AppView(
               store: Store(
-                initialState: AppState(wordToGuess: words.randomElement()!),
+                initialState: AppState(wordToGuess: "house"), // words.randomElement()!
                 reducer: appReducer,
                 environment: AppEnvironment(
                   mainQueue: .main

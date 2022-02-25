@@ -22,14 +22,17 @@ extension KeyboardState {
 
 struct KeyboardButtonStyle: ButtonStyle {
   let focused: Bool
+  let backgroundColor: Color
   let width: CGFloat
 
   func makeBody(configuration: Self.Configuration) -> some View {
     configuration.label
       .foregroundColor(.white)
-      .cornerRadius(16)
       .frame(width: width, height: 70, alignment: .center)
-      .border(focused ? .white : .clear, width: 2)
+      .background(backgroundColor)
+      .cornerRadius(16)
+      .overlay(RoundedRectangle(cornerRadius: 16)
+                .stroke(focused ? .white : .clear, lineWidth: 2))
   }
 }
 
@@ -43,8 +46,11 @@ struct KeyboardCharacterKey: View {
     Button(String(character)) {
       viewStore.send(.enterLetter(character))
     }
-    .buttonStyle(KeyboardButtonStyle(focused: focused ?? false, width: 70))
-    .background(viewStore.state.keyboard[character]!?.backgroundColor ?? .init(hex: "818384"))
+    .buttonStyle(KeyboardButtonStyle(
+      focused: focused ?? false,
+      backgroundColor: viewStore.state.keyboard[character]!?.backgroundColor ?? .init(hex: "818384"),
+      width: 70)
+    )
     .focused($focused, equals: true)
   }
 }
@@ -60,9 +66,21 @@ struct KeyboardActionKey: View {
     Button(label) {
       viewStore.send(action)
     }
-    .buttonStyle(KeyboardButtonStyle(focused: focused ?? false, width: 150))
-    .background(Color(hex: "818384"))
+    .buttonStyle(KeyboardButtonStyle(
+      focused: focused ?? false,
+      backgroundColor: Color(hex: "818384"),
+      width: 150))
     .focused($focused, equals: true)
+  }
+}
+
+struct Letter: View {
+  var letter: Character
+
+  var body: some View {
+    Text(String(letter))
+      .frame(width: 70, height: 70, alignment: .center)
+      .border(.white, width: 2)
   }
 }
 
@@ -73,12 +91,19 @@ struct AppView: View {
     WithViewStore(self.store) { viewStore in
       VStack {
         ForEach(viewStore.previousGuesses) { guess in
-          Text(guess)
+          HStack(spacing: 10) {
+            ForEach(Array(guess)) { character in
+              Letter(letter: character)
+            }
+          }
         }
 
-        HStack {
+        HStack(spacing: 10) {
           ForEach(viewStore.input) { character in
-            Text(String(character))
+            Letter(letter: character)
+          }
+          ForEach(Array(String(repeating: " ", count: 5 - viewStore.input.count))) { character in
+            Letter(letter: character)
           }
         }
 
@@ -86,12 +111,14 @@ struct AppView: View {
           HStack(spacing: 10) {
             ForEach(keyboardRows[0]) { character in
               KeyboardCharacterKey(character: character, viewStore: viewStore)
+                .id(UUID())
             }
           }
 
           HStack(spacing: 10) {
             ForEach(keyboardRows[1]) { character in
               KeyboardCharacterKey(character: character, viewStore: viewStore)
+                .id(UUID())
             }
           }
 
@@ -99,6 +126,7 @@ struct AppView: View {
             KeyboardActionKey(label: "enter", action: .submitGuess, viewStore: viewStore)
             ForEach(keyboardRows[2]) { character in
               KeyboardCharacterKey(character: character, viewStore: viewStore)
+                .id(UUID())
             }
             KeyboardActionKey(label: "backspace", action: .backspace, viewStore: viewStore)
           }
