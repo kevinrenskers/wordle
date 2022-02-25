@@ -106,7 +106,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, e
         }
       }
 
-      // Determine keyboard state for this word
+      // Determine character states for this word
       let guessWithState: [CharacterWithState] = state.input.enumerated().map { index, letter in
         var characterState: CharacterState?
 

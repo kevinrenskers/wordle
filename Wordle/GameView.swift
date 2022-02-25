@@ -36,40 +36,24 @@ struct KeyboardButtonStyle: ButtonStyle {
   }
 }
 
-struct KeyboardCharacterKey: View {
-  let character: Character
-  let viewStore: ViewStore<AppState, AppAction>
-
-  @FocusState private var focused: Bool?
-
-  var body: some View {
-    Button(String(character)) {
-      viewStore.send(.enterLetter(character))
-    }
-    .buttonStyle(KeyboardButtonStyle(
-      focused: focused ?? false,
-      backgroundColor: viewStore.state.keyboard[character]!?.backgroundColor ?? .init(hex: "818384"),
-      width: 70)
-    )
-    .focused($focused, equals: true)
-  }
-}
-
-struct KeyboardActionKey: View {
+struct KeyboardKey: View {
   let label: String
-  let action: AppAction
+  let backgroundColor: Color?
+  let width: CGFloat
+  let sendAction: AppAction
   let viewStore: ViewStore<AppState, AppAction>
 
   @FocusState private var focused: Bool?
 
   var body: some View {
     Button(label) {
-      viewStore.send(action)
+      viewStore.send(sendAction)
     }
     .buttonStyle(KeyboardButtonStyle(
       focused: focused ?? false,
-      backgroundColor: Color(hex: "818384"),
-      width: 150))
+      backgroundColor: backgroundColor ?? .init(hex: "818384"),
+      width: width)
+    )
     .focused($focused, equals: true)
   }
 }
@@ -111,25 +95,54 @@ struct AppView: View {
         VStack(spacing: 10) {
           HStack(spacing: 10) {
             ForEach(keyboardRows[0], id: \.self) { character in
-              KeyboardCharacterKey(character: character, viewStore: viewStore)
-                .id(UUID())
+              KeyboardKey(
+                label: String(character),
+                backgroundColor: viewStore.state.keyboard[character]!?.backgroundColor,
+                width: 70,
+                sendAction: .enterLetter(character),
+                viewStore: viewStore
+              )
             }
           }
 
           HStack(spacing: 10) {
             ForEach(keyboardRows[1], id: \.self) { character in
-              KeyboardCharacterKey(character: character, viewStore: viewStore)
-                .id(UUID())
+              KeyboardKey(
+                label: String(character),
+                backgroundColor: viewStore.state.keyboard[character]!?.backgroundColor,
+                width: 70,
+                sendAction: .enterLetter(character),
+                viewStore: viewStore
+              )
             }
           }
 
           HStack(spacing: 10) {
-            KeyboardActionKey(label: "enter", action: .submitGuess, viewStore: viewStore)
+            KeyboardKey(
+              label: "enter",
+              backgroundColor: nil,
+              width: 150,
+              sendAction: .submitGuess,
+              viewStore: viewStore
+            )
+
             ForEach(keyboardRows[2], id: \.self) { character in
-              KeyboardCharacterKey(character: character, viewStore: viewStore)
-                .id(UUID())
+              KeyboardKey(
+                label: String(character),
+                backgroundColor: viewStore.state.keyboard[character]!?.backgroundColor,
+                width: 70,
+                sendAction: .enterLetter(character),
+                viewStore: viewStore
+              )
             }
-            KeyboardActionKey(label: "backspace", action: .backspace, viewStore: viewStore)
+
+            KeyboardKey(
+              label: "backspace",
+              backgroundColor: nil,
+              width: 150,
+              sendAction: .backspace,
+              viewStore: viewStore
+            )
           }
         }
       }
