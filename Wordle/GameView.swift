@@ -74,6 +74,8 @@ struct AppView: View {
   var body: some View {
     WithViewStore(self.store) { viewStore in
       VStack {
+        // Previous guesses
+
         ForEach(viewStore.previousGuesses, id: \.self) { word in
           HStack(spacing: 10) {
             ForEach(word, id: \.self) { characterWithState in
@@ -83,14 +85,33 @@ struct AppView: View {
           }
         }
 
-        HStack(spacing: 10) {
-          ForEach(Array(viewStore.input.enumerated()), id: \.offset) { _, character in
-            Letter(letter: character)
-          }
-          ForEach(Array(Array(repeating: " ", count: 5 - viewStore.input.count).enumerated()), id: \.offset) { _, character in
-            Letter(letter: Character(character))
+        // Current input
+
+        if viewStore.gameState == .running {
+          HStack(spacing: 10) {
+            ForEach(Array(viewStore.input.enumerated()), id: \.offset) { _, character in
+              Letter(letter: character)
+            }
+            ForEach(Array(Array(repeating: " ", count: 5 - viewStore.input.count).enumerated()), id: \.offset) { index, character in
+              Letter(letter: Character(character))
+                .background(index == 0 ? .white : .clear)
+            }
           }
         }
+
+        // Fill with empty rows until we have 6 rows in total
+
+        ForEach((0 ..< 5 - viewStore.previousGuesses.count).map { $0 }, id: \.self) { _ in
+          HStack(spacing: 10) {
+            ForEach(Array(Array(repeating: " ", count: 5).enumerated()), id: \.offset) { _, character in
+              Letter(letter: Character(character))
+            }
+          }
+        }
+
+        Spacer()
+
+        // Keyboard
 
         VStack(spacing: 10) {
           HStack(spacing: 10) {
@@ -163,6 +184,13 @@ struct AppView_Previews: PreviewProvider {
               .init(character: "m", state: .absent),
               .init(character: "e", state: .present),
               .init(character: "r", state: .absent)
+            ],
+            [
+              .init(character: "h", state: .correct),
+              .init(character: "o", state: .correct),
+              .init(character: "r", state: .absent),
+              .init(character: "s", state: .correct),
+              .init(character: "e", state: .correct)
             ]
           ],
           input: ["h", "o"],
