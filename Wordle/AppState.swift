@@ -50,6 +50,7 @@ struct AppState: Equatable {
 
 enum AppAction: Equatable {
   case enterLetter(Character)
+  case backspace
   case submitGuess
   case reset(String?)
 }
@@ -66,6 +67,15 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, e
       }
 
       state.input.append(Character(letter.lowercased()))
+      return .none
+
+    case .backspace:
+      guard state.gameState == .running, state.input.count > 0 else {
+        return .none
+      }
+
+      _ = state.input.popLast()
+
       return .none
 
     case .submitGuess:

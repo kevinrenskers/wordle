@@ -1,12 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
 
-let keyboardRows: [[Character]] = [
-  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
-  ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
-  ["z", "x", "c", "v", "b", "n", "m"],
-]
-
 extension KeyboardState {
   var backgroundColor: Color {
     switch self {
@@ -22,17 +16,18 @@ extension KeyboardState {
 
 struct KeyboardButtonStyle: ButtonStyle {
   let focused: Bool
+  let width: CGFloat
 
   func makeBody(configuration: Self.Configuration) -> some View {
     configuration.label
       .foregroundColor(.white)
       .cornerRadius(16)
-      .frame(width: 70, height: 70, alignment: .center)
+      .frame(width: width, height: 70, alignment: .center)
       .border(focused ? .white : .clear, width: 2)
   }
 }
 
-struct KeyboardKey: View {
+struct KeyboardCharacterKey: View {
   let character: Character
   let viewStore: ViewStore<AppState, AppAction>
 
@@ -40,12 +35,28 @@ struct KeyboardKey: View {
 
   var body: some View {
     Button(String(character)) {
-      print("YO!")
       viewStore.send(.enterLetter(character))
     }
-      .buttonStyle(KeyboardButtonStyle(focused: focused ?? false))
-      .background(viewStore.state.keyboard[character]!?.backgroundColor ?? .init(hex: "818384"))
-      .focused($focused, equals: true)
+    .buttonStyle(KeyboardButtonStyle(focused: focused ?? false, width: 70))
+    .background(viewStore.state.keyboard[character]!?.backgroundColor ?? .init(hex: "818384"))
+    .focused($focused, equals: true)
+  }
+}
+
+struct KeyboardActionKey: View {
+  let label: String
+  let action: AppAction
+  let viewStore: ViewStore<AppState, AppAction>
+
+  @FocusState private var focused: Bool?
+
+  var body: some View {
+    Button(label) {
+      viewStore.send(action)
+    }
+    .buttonStyle(KeyboardButtonStyle(focused: focused ?? false, width: 150))
+    .background(Color(hex: "818384"))
+    .focused($focused, equals: true)
   }
 }
 
@@ -66,12 +77,24 @@ struct AppView: View {
         }
 
         VStack(spacing: 10) {
-          ForEach(keyboardRows) { row in
-            HStack(spacing: 10) {
-              ForEach(row) { character in
-                KeyboardKey(character: character, viewStore: viewStore)
-              }
+          HStack(spacing: 10) {
+            ForEach(["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"]) { character in
+              KeyboardCharacterKey(character: Character(character), viewStore: viewStore)
             }
+          }
+
+          HStack(spacing: 10) {
+            ForEach(["a", "s", "d", "f", "g", "h", "j", "k", "l"]) { character in
+              KeyboardCharacterKey(character: Character(character), viewStore: viewStore)
+            }
+          }
+
+          HStack(spacing: 10) {
+            KeyboardActionKey(label: "enter", action: .submitGuess, viewStore: viewStore)
+            ForEach(["z", "x", "c", "v", "b", "n", "m"]) { character in
+              KeyboardCharacterKey(character: Character(character), viewStore: viewStore)
+            }
+            KeyboardActionKey(label: "backspace", action: .backspace, viewStore: viewStore)
           }
         }
       }
