@@ -32,7 +32,7 @@ struct KeyboardButtonStyle: ButtonStyle {
       .background(backgroundColor)
       .cornerRadius(16)
       .overlay(RoundedRectangle(cornerRadius: 16)
-                .stroke(focused ? .white : .clear, lineWidth: 2))
+                .stroke(focused ? Color.primary : .clear, lineWidth: 2))
   }
 }
 
@@ -64,8 +64,8 @@ struct Letter: View {
   var body: some View {
     Text(String(letter))
       .frame(width: 70, height: 70, alignment: .center)
-      .border(.white, width: 2)
-      .foregroundColor(.white)
+      .border(.primary, width: 2)
+      .foregroundColor(.primary)
   }
 }
 
