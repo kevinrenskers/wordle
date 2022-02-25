@@ -32,7 +32,7 @@ class WordleTests: XCTestCase {
     store.send(.enterLetter("d")) { $0.input.append("d") }
     store.send(.enterLetter("e")) { $0.input.append("e") }
 
-    // Can't enter more then 5 letters
+    // Can't enter more than 5 letters
     store.send(.enterLetter("f"))
 
     // Can't enter invalid words
@@ -118,8 +118,6 @@ class WordleTests: XCTestCase {
     store.send(.enterLetter("h"))
 
     // Reset the game
-    store.send(.reset("crane")) {
-      $0 = AppState(wordToGuess: "crane")
-    }
+    store.send(.reset("crane")) { $0 = AppState(wordToGuess: "crane") }
   }
 }
