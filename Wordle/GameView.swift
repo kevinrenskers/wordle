@@ -1,6 +1,12 @@
 import ComposableArchitecture
 import SwiftUI
 
+let keyboardRows: [[Character]] = [
+  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+  ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+  ["z", "x", "c", "v", "b", "n", "m"],
+]
+
 extension KeyboardState {
   var backgroundColor: Color {
     switch self {
@@ -78,21 +84,21 @@ struct AppView: View {
 
         VStack(spacing: 10) {
           HStack(spacing: 10) {
-            ForEach(["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"]) { character in
-              KeyboardCharacterKey(character: Character(character), viewStore: viewStore)
+            ForEach(keyboardRows[0]) { character in
+              KeyboardCharacterKey(character: character, viewStore: viewStore)
             }
           }
 
           HStack(spacing: 10) {
-            ForEach(["a", "s", "d", "f", "g", "h", "j", "k", "l"]) { character in
-              KeyboardCharacterKey(character: Character(character), viewStore: viewStore)
+            ForEach(keyboardRows[1]) { character in
+              KeyboardCharacterKey(character: character, viewStore: viewStore)
             }
           }
 
           HStack(spacing: 10) {
             KeyboardActionKey(label: "enter", action: .submitGuess, viewStore: viewStore)
-            ForEach(["z", "x", "c", "v", "b", "n", "m"]) { character in
-              KeyboardCharacterKey(character: Character(character), viewStore: viewStore)
+            ForEach(keyboardRows[2]) { character in
+              KeyboardCharacterKey(character: character, viewStore: viewStore)
             }
             KeyboardActionKey(label: "backspace", action: .backspace, viewStore: viewStore)
           }
