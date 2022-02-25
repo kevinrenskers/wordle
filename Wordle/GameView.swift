@@ -143,6 +143,15 @@ struct AppView_Previews: PreviewProvider {
       store: Store(
         initialState: AppState(
           wordToGuess: "house",
+          previousGuesses: [
+            [
+              .init(character: "h", state: .correct),
+              .init(character: "o", state: .correct),
+              .init(character: "m", state: .absent),
+              .init(character: "e", state: .present),
+              .init(character: "r", state: .absent)
+            ]
+          ],
           input: ["h", "o"],
           keyboard: [
             "a": nil,

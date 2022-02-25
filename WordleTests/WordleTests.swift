@@ -59,7 +59,13 @@ class WordleTests: XCTestCase {
     // We submit the guess, and expect the "h" and "o" to be correct,
     // while the "e" does exist in the word but is in the wrong position.
     store.send(.submitGuess) {
-      //$0.previousGuesses.append("homer")
+      $0.previousGuesses.append([
+        .init(character: "h", state: .correct),
+        .init(character: "o", state: .correct),
+        .init(character: "m", state: .absent),
+        .init(character: "e", state: .present),
+        .init(character: "r", state: .absent)
+      ])
       $0.input = []
 
       $0.keyboard["h"] = .correct
@@ -77,7 +83,13 @@ class WordleTests: XCTestCase {
     store.send(.enterLetter("s")) { $0.input.append("s") }
 
     store.send(.submitGuess) {
-      //$0.previousGuesses.append("hopes")
+      $0.previousGuesses.append([
+        .init(character: "h", state: .correct),
+        .init(character: "o", state: .correct),
+        .init(character: "p", state: .absent),
+        .init(character: "e", state: .present),
+        .init(character: "s", state: .present)
+      ])
       $0.input = []
 
       $0.keyboard["p"] = .absent
@@ -92,7 +104,13 @@ class WordleTests: XCTestCase {
     store.send(.enterLetter("e")) { $0.input.append("e") }
 
     store.send(.submitGuess) {
-      //$0.previousGuesses.append("horse")
+      $0.previousGuesses.append([
+        .init(character: "h", state: .correct),
+        .init(character: "o", state: .correct),
+        .init(character: "r", state: .absent),
+        .init(character: "s", state: .correct),
+        .init(character: "e", state: .correct)
+      ])
       $0.input = []
 
       $0.keyboard["e"] = .correct
@@ -107,7 +125,13 @@ class WordleTests: XCTestCase {
     store.send(.enterLetter("e")) { $0.input.append("e") }
 
     store.send(.submitGuess) {
-      //$0.previousGuesses.append("house")
+      $0.previousGuesses.append([
+        .init(character: "h", state: .correct),
+        .init(character: "o", state: .correct),
+        .init(character: "u", state: .correct),
+        .init(character: "s", state: .correct),
+        .init(character: "e", state: .correct)
+      ])
       $0.input = []
       $0.gameState = .won
 

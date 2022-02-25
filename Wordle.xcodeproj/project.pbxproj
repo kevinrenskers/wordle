@@ -83,14 +83,13 @@
 		0A612A5A27C8D19F00BDBB5A /* Wordle */ = {
 			isa = PBXGroup;
 			children = (
+				0A612A6127C8D1A000BDBB5A /* Preview Content */,
+				0A612AB727C9287300BDBB5A /* Extensions */,
+				0A612A5F27C8D1A000BDBB5A /* Assets.xcassets */,
 				0A612A5B27C8D19F00BDBB5A /* WordleApp.swift */,
 				0A612A5D27C8D19F00BDBB5A /* GameView.swift */,
-				0A612A5F27C8D1A000BDBB5A /* Assets.xcassets */,
-				0A612A6127C8D1A000BDBB5A /* Preview Content */,
 				0A612A6C27C8D23700BDBB5A /* AppState.swift */,
-				0A612AB127C8DFA400BDBB5A /* String+Extensions.swift */,
 				0A612AB327C8EE8900BDBB5A /* WordList.swift */,
-				0A612AB527C9080100BDBB5A /* Color+Hex.swift */,
 			);
 			path = Wordle;
 			sourceTree = "<group>";
@@ -109,6 +108,15 @@
 				0A612AAA27C8D44B00BDBB5A /* WordleTests.swift */,
 			);
 			path = WordleTests;
+			sourceTree = "<group>";
+		};
+		0A612AB727C9287300BDBB5A /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				0A612AB127C8DFA400BDBB5A /* String+Extensions.swift */,
+				0A612AB527C9080100BDBB5A /* Color+Hex.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
