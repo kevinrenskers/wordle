@@ -13,7 +13,7 @@ extension CharacterState {
       case .absent:
         return .init(hex: "3a3b3c")
       case .present:
-        return .init(hex: "b59f3b")
+        return .init(hex: "85c0f9")
       case .correct:
         return .init(hex: "538d4e")
     }
@@ -68,52 +68,74 @@ struct Letter: View {
   }
 }
 
+struct GameDone: View {
+  let gameState: GameState
+  let viewStore: ViewStore<AppState, AppAction>
+
+  var body: some View {
+    VStack(spacing: 40) {
+      Text(gameState == .won ? "You've won!" : "Awww. The word was \(viewStore.wordToGuess)!")
+
+      Button("Play again") {
+        viewStore.send(.reset(nil))
+      }
+    }
+    .padding(40)
+    .background(.black)
+  }
+}
+
 struct AppView: View {
   let store: Store<AppState, AppAction>
 
   var body: some View {
     WithViewStore(self.store) { viewStore in
-      VStack(spacing: 10) {
-        // Previous guesses
-
-        ForEach(viewStore.previousGuesses, id: \.self) { word in
-          HStack(spacing: 10) {
-            ForEach(word, id: \.self) { characterWithState in
-              Letter(letter: characterWithState.character)
-                .background(characterWithState.state?.backgroundColor ?? .init(hex: "818384"))
-            }
-          }
-        }
-
-        // Current input
-
-        if viewStore.gameState == .running {
-          HStack(spacing: 10) {
-            ForEach(Array(viewStore.input.enumerated()), id: \.offset) { _, character in
-              Letter(letter: character)
-            }
-            ForEach(Array(Array(repeating: " ", count: 5 - viewStore.input.count).enumerated()), id: \.offset) { index, character in
-              Letter(letter: Character(index == 0 ? "_" : character))
-            }
-          }
-        }
-
-        // Fill with empty rows until we have 6 rows in total
-
-        if viewStore.previousGuesses.count < 6 {
-          ForEach((0 ..< (viewStore.gameState == .running ? 5 : 6) - viewStore.previousGuesses.count).map { $0 }, id: \.self) { _ in
-            HStack(spacing: 10) {
-              ForEach(Array(Array(repeating: " ", count: 5).enumerated()), id: \.offset) { _, character in
-                Letter(letter: Character(character))
+      VStack {
+        ZStack {
+          // Grid
+          VStack(spacing: 10) {
+            // Previous guesses
+            ForEach(viewStore.previousGuesses, id: \.self) { word in
+              HStack(spacing: 10) {
+                ForEach(word, id: \.self) { characterWithState in
+                  Letter(letter: characterWithState.character)
+                    .background(characterWithState.state?.backgroundColor ?? .init(hex: "818384"))
+                }
               }
             }
+
+            // Current input
+            if viewStore.gameState == .running {
+              HStack(spacing: 10) {
+                ForEach(Array(viewStore.input.enumerated()), id: \.offset) { _, character in
+                  Letter(letter: character)
+                }
+                ForEach(Array(Array(repeating: " ", count: 5 - viewStore.input.count).enumerated()), id: \.offset) { index, character in
+                  Letter(letter: Character(index == 0 ? "_" : character))
+                }
+              }
+            }
+
+            // Fill with empty rows until we have 6 rows in total
+            if viewStore.previousGuesses.count < 6 {
+              ForEach((0 ..< (viewStore.gameState == .running ? 5 : 6) - viewStore.previousGuesses.count).map { $0 }, id: \.self) { _ in
+                HStack(spacing: 10) {
+                  ForEach(Array(Array(repeating: " ", count: 5).enumerated()), id: \.offset) { _, character in
+                    Letter(letter: Character(character))
+                  }
+                }
+              }
+            }
+          }
+
+          if viewStore.gameState != .running {
+            GameDone(gameState: viewStore.gameState, viewStore: viewStore)
           }
         }
 
         Spacer()
 
         // Keyboard
-
         VStack(spacing: 10) {
           HStack(spacing: 10) {
             ForEach(keyboardRows[0], id: \.self) { character in
