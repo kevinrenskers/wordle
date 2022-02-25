@@ -1,6 +1,6 @@
 import ComposableArchitecture
 
-enum KeyboardState: Equatable {
+enum CharacterState: Equatable {
   case absent
   case present
   case correct
@@ -14,7 +14,7 @@ enum GameState: Equatable {
 
 struct CharacterWithState: Equatable, Hashable {
   let character: Character
-  let state: KeyboardState?
+  let state: CharacterState?
 }
 
 struct AppState: Equatable {
@@ -23,7 +23,7 @@ struct AppState: Equatable {
 
   var previousGuesses: [[CharacterWithState]] = []
   var input: [Character] = []
-  var keyboard: [Character: KeyboardState?] = [
+  var keyboard: [Character: CharacterState?] = [
     "a": nil,
     "b": nil,
     "c": nil,
@@ -108,17 +108,17 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, e
 
       // Determine keyboard state for this word
       let guessWithState: [CharacterWithState] = state.input.enumerated().map { index, letter in
-        var letterState: KeyboardState?
+        var characterState: CharacterState?
 
         if state.wordToGuess[index] == letter {
-          letterState = .correct
+          characterState = .correct
         } else if state.wordToGuess.contains(letter) {
-          letterState = .present
+          characterState = .present
         } else {
-          letterState = .absent
+          characterState = .absent
         }
 
-        return CharacterWithState(character: letter, state: letterState)
+        return CharacterWithState(character: letter, state: characterState)
       }
 
       state.previousGuesses.append(guessWithState)

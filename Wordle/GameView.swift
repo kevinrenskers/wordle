@@ -7,7 +7,7 @@ let keyboardRows: [[Character]] = [
   ["z", "x", "c", "v", "b", "n", "m"],
 ]
 
-extension KeyboardState {
+extension CharacterState {
   var backgroundColor: Color {
     switch self {
       case .absent:
