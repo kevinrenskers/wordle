@@ -99,7 +99,7 @@ struct AppView: View {
               HStack(spacing: 10) {
                 ForEach(word, id: \.self) { characterWithState in
                   Letter(letter: characterWithState.character)
-                    .background(characterWithState.state?.backgroundColor ?? .init(hex: "818384"))
+                    .background(characterWithState.state.backgroundColor)
                 }
               }
             }

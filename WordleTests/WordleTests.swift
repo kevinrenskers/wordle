@@ -144,4 +144,58 @@ class WordleTests: XCTestCase {
     // Reset the game
     store.send(.reset("crane")) { $0 = AppState(wordToGuess: "crane") }
   }
+
+  func testWordleColorLogic() throws {
+    // Word to guess: "vivid".
+    let store = TestStore(
+      initialState: AppState(wordToGuess: "vivid"),
+      reducer: appReducer,
+      environment: AppEnvironment(
+        mainQueue: scheduler.eraseToAnyScheduler()
+      )
+    )
+
+    // We're going to enter the word "daddy".
+    // The official Wordle game only shows the FIRST "d" as being present,
+    // the other ones are ignored becauae there is only one "d" in the word to guess.
+    store.send(.enterLetter("d")) { $0.input.append("d") }
+    store.send(.enterLetter("a")) { $0.input.append("a") }
+    store.send(.enterLetter("d")) { $0.input.append("d") }
+    store.send(.enterLetter("d")) { $0.input.append("d") }
+    store.send(.enterLetter("y")) { $0.input.append("y") }
+
+    store.send(.submitGuess) {
+      $0.previousGuesses.append([
+        .init(character: "d", state: .present),
+        .init(character: "a", state: .absent),
+        .init(character: "d", state: .absent),
+        .init(character: "d", state: .absent),
+        .init(character: "y", state: .absent)
+      ])
+      $0.input = []
+
+      $0.keyboard["d"] = .present
+      $0.keyboard["a"] = .absent
+      $0.keyboard["y"] = .absent
+    }
+
+    store.send(.enterLetter("b")) { $0.input.append("b") }
+    store.send(.enterLetter("a")) { $0.input.append("a") }
+    store.send(.enterLetter("d")) { $0.input.append("d") }
+    store.send(.enterLetter("d")) { $0.input.append("d") }
+    store.send(.enterLetter("y")) { $0.input.append("y") }
+
+    store.send(.submitGuess) {
+      $0.previousGuesses.append([
+        .init(character: "b", state: .absent),
+        .init(character: "a", state: .absent),
+        .init(character: "d", state: .present),
+        .init(character: "d", state: .absent),
+        .init(character: "y", state: .absent)
+      ])
+      $0.input = []
+
+      $0.keyboard["b"] = .absent
+    }
+  }
 }
