@@ -90,33 +90,34 @@ struct AppView: View {
   var body: some View {
     WithViewStore(self.store) { viewStore in
       VStack {
-        ForEach(viewStore.previousGuesses) { guess in
+        ForEach(viewStore.previousGuesses, id: \.self) { word in
           HStack(spacing: 10) {
-            ForEach(Array(guess)) { character in
-              Letter(letter: character)
+            ForEach(word, id: \.self) { characterWithState in
+              Letter(letter: characterWithState.character)
+                .background(characterWithState.state?.backgroundColor ?? .init(hex: "818384"))
             }
           }
         }
 
         HStack(spacing: 10) {
-          ForEach(viewStore.input) { character in
+          ForEach(Array(viewStore.input.enumerated()), id: \.offset) { _, character in
             Letter(letter: character)
           }
-          ForEach(Array(String(repeating: " ", count: 5 - viewStore.input.count))) { character in
-            Letter(letter: character)
+          ForEach(Array(Array(repeating: " ", count: 5 - viewStore.input.count).enumerated()), id: \.offset) { _, character in
+            Letter(letter: Character(character))
           }
         }
 
         VStack(spacing: 10) {
           HStack(spacing: 10) {
-            ForEach(keyboardRows[0]) { character in
+            ForEach(keyboardRows[0], id: \.self) { character in
               KeyboardCharacterKey(character: character, viewStore: viewStore)
                 .id(UUID())
             }
           }
 
           HStack(spacing: 10) {
-            ForEach(keyboardRows[1]) { character in
+            ForEach(keyboardRows[1], id: \.self) { character in
               KeyboardCharacterKey(character: character, viewStore: viewStore)
                 .id(UUID())
             }
@@ -124,7 +125,7 @@ struct AppView: View {
 
           HStack(spacing: 10) {
             KeyboardActionKey(label: "enter", action: .submitGuess, viewStore: viewStore)
-            ForEach(keyboardRows[2]) { character in
+            ForEach(keyboardRows[2], id: \.self) { character in
               KeyboardCharacterKey(character: character, viewStore: viewStore)
                 .id(UUID())
             }
@@ -142,7 +143,6 @@ struct AppView_Previews: PreviewProvider {
       store: Store(
         initialState: AppState(
           wordToGuess: "house",
-          previousGuesses: ["homer", "hopes"],
           input: ["h", "o"],
           keyboard: [
             "a": nil,

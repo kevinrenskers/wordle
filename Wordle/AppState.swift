@@ -12,11 +12,16 @@ enum GameState: Equatable {
   case lost
 }
 
+struct CharacterWithState: Equatable, Hashable {
+  let character: Character
+  let state: KeyboardState?
+}
+
 struct AppState: Equatable {
   var wordToGuess: String
   var gameState = GameState.running
 
-  var previousGuesses: [String] = []
+  var previousGuesses: [[CharacterWithState]] = []
   var input: [Character] = []
   var keyboard: [Character: KeyboardState?] = [
     "a": nil,
@@ -88,11 +93,11 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, e
         return .none
       }
 
+      // Update the overall keyboard state
       for (index, letter) in state.input.enumerated() {
         if state.wordToGuess[index] == letter {
           state.keyboard[letter] = .correct
         } else if state.wordToGuess.contains(letter) {
-          let b = state.keyboard[letter]
           if let keyboardState = state.keyboard[letter], keyboardState == nil {
             state.keyboard[letter] = .present
           }
@@ -101,7 +106,22 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, e
         }
       }
 
-      state.previousGuesses.append(guess)
+      // Determine keyboard state for this word
+      let guessWithState: [CharacterWithState] = state.input.enumerated().map { index, letter in
+        var letterState: KeyboardState?
+
+        if state.wordToGuess[index] == letter {
+          letterState = .correct
+        } else if state.wordToGuess.contains(letter) {
+          letterState = .present
+        } else {
+          letterState = .absent
+        }
+
+        return CharacterWithState(character: letter, state: letterState)
+      }
+
+      state.previousGuesses.append(guessWithState)
 
       if guess == state.wordToGuess {
         state.gameState = .won
